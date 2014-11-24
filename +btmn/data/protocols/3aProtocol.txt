@@ -1,0 +1,36 @@
+[Protocol]
+ProtocolName=3aProtocol
+SectionName=Transition
+StartTime=11-NOV-2014 11:00:00
+
+[Transition_01]
+Comment=upright - dim - free running
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=DIMUDimUprightProfileLight
+PostureProfile[ProfileName]=UPRIUprightProfilePosture
+ThermoProfile[ProfileName]=TEMPDefaultProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_02]
+Comment=supine - dim - free running
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=DIMSDimSupineProfileLight
+PostureProfile[ProfileName]=SUPISupineProfilePosture
+ThermoProfile[ProfileName]=TEMPDefaultProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_03]
+Comment=supine - bright - free running
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=BRISBrightSupineProfileLight
+PostureProfile[ProfileName]=SUPISupineProfilePosture
+ThermoProfile[ProfileName]=TEMPDefaultProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_04]
+Comment=upright - bright - free running
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=BRIUBrightUprightProfileLight
+PostureProfile[ProfileName]=UPRIUprightprofilePosture
+ThermoProfile[ProfileName]=TEMPDefaultProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime

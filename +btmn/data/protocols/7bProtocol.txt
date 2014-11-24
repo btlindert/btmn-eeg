@@ -1,0 +1,68 @@
+[Protocol]
+ProtocolName=7bProtocol
+SectionName=Transition
+StartTime=28-OCT-2014 13:45:00
+
+[Transition_01]
+Comment=supine - dim - noDPG
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=DIMSDimSupineProfileLight
+PostureProfile[ProfileName]=SUPISupineProfilePosture
+ThermoProfile[ProfileName]=DPGSupineProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_02]
+Comment=supine - dim - DPG
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=DIMSDimSupineProfileLight
+PostureProfile[ProfileName]=SUPISupineProfilePosture
+ThermoProfile[ProfileName]=DPGUprightProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_03]
+Comment=upright - dim - DPG
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=DIMUDimUprightProfileLight
+PostureProfile[ProfileName]=UPRIUprightProfilePosture
+ThermoProfile[ProfileName]=DPGUprightProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_04]
+Comment=upright - bright - noDPG
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=BRIUBrightUprightProfileLight
+PostureProfile[ProfileName]=UPRIUprightProfilePosture
+ThermoProfile[ProfileName]=DPGSupineProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_05]
+Comment=upright - dim - noDPG
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=DIMUDimUprightProfileLight
+PostureProfile[ProfileName]=UPRIUprightProfilePosture
+ThermoProfile[ProfileName]=DPGSupineProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_06]
+Comment=upright - bright - DPG
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=BRIUBrightUprightProfileLight
+PostureProfile[ProfileName]=UPRIUprightProfilePosture
+ThermoProfile[ProfileName]=DPGUprightProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_07]
+Comment=supine - bright - DPG
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=BRISBrightSupineProfileLight
+PostureProfile[ProfileName]=SUPISupineProfilePosture
+ThermoProfile[ProfileName]=DPGUprightProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime
+
+[Transition_08]
+Comment=supine - bright - noDPG
+Duration[D-HH:MM:SS]=0-00:30:00
+LightProfile[ProfileName]=BRISBrightSupineProfileLight
+PostureProfile[ProfileName]=SUPISupineProfilePosture
+ThermoProfile[ProfileName]=DPGSupineProfileThermo
+EPrimeProfile[ProfileName]=DefaultProfileEPrime

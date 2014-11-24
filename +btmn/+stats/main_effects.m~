@@ -1,0 +1,322 @@
+% start with a clean state
+close all;
+clear all;
+clear classes;
+clc;
+
+% add meegpipe, fieldtrip, eeglab
+addpath(genpath('/data1/toolbox/meegpipe'));
+addpath(genpath('/data1/toolbox/fieldtrip'));
+addpath(genpath('/data1/projects/batman/scripts_bart/batman/+batman'));
+
+% initialize pipeline 
+meegpipe.initialize
+
+% import utilities
+import meegpipe.aggregate;
+import mperl.file.find.finddepth_regex_match;
+import batman.*;
+import mperl.join;
+import mperl.file.spec.catfile;
+
+% import meegpipe.node.*;
+% import somsds.link2files;
+% import misc.get_hostname;
+% import misc.regexpi_dir;
+% import mperl.file.spec.catdir;
+% import mperl.file.find.finddepth_regex_match;
+
+opt.Bands       = batman.eeg_bands;
+BANDS           = keys(opt.Bands);
+opt.Scale       = 'db';
+opt.RerefMatrix = meegpipe.node.reref.avg_matrix;
+opt.SaveToFile  = '/data1/projects/batman/scripts_bart/analysis/main_effects.mat';
+
+% the input directory where the split, cleaned files are located
+INPUT_DIR = '/data1/projects/batman/analysis/cleaning';
+INPUT_DIR = misc.find_latest_dir(INPUT_DIR);
+
+% the output directory, where we want to store Fieldtrip output
+OUTPUT_DIR = '/data1/projects/batman/scripts_bart';
+
+% obtain all files for the follwing subjects
+SUBJECTS = [1:4, 7, 9:10];%[1:4, 6:7, 9:10];
+
+% List of blocks to be aggregated
+BLOCKS = [6:9, 11:14];
+
+% this is a subject-by-block matrix
+CONDITIONS = [1,2,4,3,0,5,6,12,7,0,11,8,10,9;...    
+              2,3,1,4,0,6,7,5,8,0,12,9,11,10;...
+              3,4,2,1,0,7,8,6,9,0,5,10,12,11;...
+              4,1,3,2,0,8,9,7,10,0,6,11,5,12;...
+              0,0,0,0,0,0,0,0,0,0,0,0,0,0;...
+              2,3,1,4,0,10,11,9,12,0,8,5,7,6;...
+              3,4,2,1,0,11,12,10,5,0,9,6,8,7;...
+              0,0,0,0,0,0,0,0,0,0,0,0,0,0;...
+              1,2,4,3,0,9,10,8,11,0,7,12,6,5;...
+              4,1,3,2,0,12,5,11,6,0,10,7,9,8];
+
+% this is a condition-by-{light,posture,temperature} matrix
+MANIPULATIONS = [1,1,2;...
+                 1,0,2;...
+                 0,1,2;...
+                 0,0,2;...
+                 1,1,0;...
+                 1,1,1;...
+                 1,0,0;...
+                 1,0,1;...
+                 0,1,0;...
+                 0,1,1;...
+                 0,0,0;...
+                 0,0,1];
+
+% required for design of ft_freqstatistics
+LOCATION =  [1 1 1;...
+             2 2 1;...
+             3 1 2;...
+             4 2 2;...
+             1 3 3;...
+             2 4 3;...
+             3 3 4;...
+             4 4 4];
+             
+% cell identifying the columns of MAMNIPULATIONS
+EFFECT = {'L', 'P', 'T'};
+
+%% List of subjects/blocks to be aggregated
+regex = ['0+(' join('|', SUBJECTS) ').+rs_(' join('|', BLOCKS) ').pseth$'];
+files = finddepth_regex_match(INPUT_DIR, regex);
+
+%% create layout and neighbours
+disp('loading initial dataset'); 
+tmpData = import(physioset.import.physioset, files{1});
+select(pset.selector.sensor_class('Class', 'eeg'), tmpData);
+tmpData = fieldtrip(tmpData, 'BadData', 'donothing');
+
+% we need this for the ft_freqstatistics later on
+%[neighbours, layout] = sensor_geometry(tmpData);
+
+cfg          = [];
+cfg.method   = 'distance';
+cfg.feedback = 'no';
+neighbours   = ft_prepare_neighbours(cfg, tmpData);
+cfg          = [];
+layout       = ft_prepare_layout(cfg, tmpData);
+
+% merge files into seperate blocks for every condition
+%% start with postural manipulation, 
+
+% create template data struct by loading one file
+% dataPost0           = tmpData;
+% dataPost0.time{1}   = (1:size(dataPost0.trial{1},2) - 1)/1000;
+% dataPost0.time{1}   = [0 dataPost0.time{1}];
+% dataPost0.trial{1}  = [];
+% 
+% dataPost1           = dataPost0;
+
+% set ft_freqanalysis vars
+cfgF = [];
+cfgF.method         = 'mtmfft';
+cfgF.output         = 'pow';
+cfgF.taper          = 'hanning';
+cfgF.keeptrials     = 'no';
+cfgF.foilim         = [];
+%cfgF.keepindividual = 'yes';
+cfgF.avgoverfreq    = 'yes';
+
+% set ft_freqstatistics vars
+cfgS                     = [];
+cfgS.frequency           = [];
+cfgS.avgoverfreq         = 'yes';
+cfgS.keepindividual      = 'yes'; 
+cfgS.method              = 'montecarlo';
+cfgS.statistic           = 'depsamplesT';
+cfgS.correctm            = 'cluster';
+cfgS.clusteralpha        = 0.05;
+cfgS.alpha               = 0.05;
+cfgS.numrandomization    = 1000;
+cfgS.neighbours          = neighbours;
+cfgS.layout              = layout;
+%cfgS.design              = [ones(1,8) ones(1,8)*2; 1:8 1:8];
+cfgS.design              = [ones(1,28) ones(1,28)*2;...
+                            1:28 1:28];
+%                             ones(1,7) ones(1,7)*2 ones(1,7)*3 ones(1,7)*4,...
+%                             ones(1,7) ones(1,7)*2 ones(1,7)*3 ones(1,7)*4;...
+%                             1:7 1:7 1:7 1:7 1:7 1:7 1:7 1:7];
+cfgS.ivar                = 1;
+cfgS.uvar                = 2;
+%cfgS.cvar                = 2;
+
+for bandItr = 2:numel(BANDS)
+    % pass frequency band to cfg file for ft_freqanalysis
+    cfgF.foilim = opt.Bands(BANDS(bandItr));
+
+    % run through all main effects
+    for effectItr = 1:numel(EFFECT)
+        
+        disp(['calculating main effect for ' BANDS(bandItr) ' power in ' EFFECT{effectItr}]);
+
+        % first find rows corresponding to EFFECT level 1
+        % use only the afternoon protocol (rows 5:12)
+        rows1 = find(MANIPULATIONS(5:12,effectItr))';
+
+        % then the other rows must be zero
+        rows0 = setdiff(1:8, rows1);
+
+        % add the first 4 rows to get back to original
+        rows0 = rows0 + 4;
+        rows1 = rows1 + 4;
+
+        for subjItr = 1:numel(SUBJECTS)
+            % create iteration vars
+            %a = 1;
+            %b = 1;
+
+            % select subject
+            subject = SUBJECTS(subjItr);
+            disp(['processing files for subject ' num2str(subject)]);
+
+            for blockItr = 1:numel(BLOCKS)
+                disp(['processing block ' num2str(blockItr)]);        
+
+                % get the condition from the conditions file
+                block = BLOCKS(blockItr);
+                cond  = CONDITIONS(subject, block);
+
+                % find file
+                regex = ['0+(' join('|', subject) ')_.+rs_(' join('|', block) ').pseth$'];
+                file  = finddepth_regex_match(INPUT_DIR, regex, false);
+
+                % make sure to exclude missing data
+                if ~isempty(file)
+                    % load the pset file
+                    data = pset.load(file{1});
+                    
+                    disp('subsetting data'); 
+                    %select(data, [], 240001:size(data,2));
+                    data = subset(data, 1:size(data,1), 120001:size(data,2));
+                    %mySel = pset.selector.sensor_class('Class', 'EEG');
+                    %data1 = subset(data, mySel);
+                    
+                    % copy data
+                    data = copy(data);
+                    
+                    disp('rereferencing data');
+                    % create avg reference matrix for this dataset
+                    M = opt.RerefMatrix(data); 
+                    
+                    % reference the dataset to average 
+                    data = reref(data, M);                  
+
+                    disp('converting to fieldtrip');
+                    % chan_time data
+                    dataFt = fieldtrip(data);
+
+                    % reduce to last 1 minute
+                    dataFt.trial{1}     = dataFt.trial{1};%(:,240001:end);
+                    dataFt.time{1}      = (1:size(dataFt.trial{1},2)-1)./1000;
+                    dataFt.time{1}      = [0 dataFt.time{1}];
+                    dataFt.sampleinfo   = [0, size(dataFt.trial{1},2)];
+
+                    if ismember(cond, rows0) == 1
+                        % get index number from LOCATION
+                        a = LOCATION(cond-4, effectItr);
+                        
+                        c = (subjItr-1)*4 + a;
+                        
+                        % assign to level-0 dataset 
+                        data0{c} = ft_freqanalysis(cfgF, dataFt);
+
+                        % increase iteration
+                        %a = a + 1;
+
+                    elseif ismember(cond, rows1) == 1
+                        % get index number from LOCATION
+                        b = LOCATION(cond-4, effectItr);
+                        
+                        c = (subjItr-1)*4 + b;
+                        % assign to level-1 dataset
+                        data1{c} = ft_freqanalysis(cfgF, dataFt);
+
+                        % increase iteration
+                        %b = b + 1;
+
+                    end
+                
+                    % clear dataFt to free up memory
+                    clear dataFt
+                end
+            end
+        
+            %cfg = [];
+
+            %c = (subjItr-1)*4;
+            
+            % calculate grand average over sub-conditions per subject
+            %freq0avg{subjItr} = ft_freqgrandaverage(cfg, data0{:});
+            %freq1avg{subjItr} = ft_freqgrandaverage(cfg, data1{:});
+%             for ii = 1:4
+%                 freq0avg{c+ii} = data0{ii};
+%                 freq1avg{c+ii} = data1{ii};
+%             end
+            % do log transformation if required
+            %if ismember(lower(opt.Scale), {'db', 'logarithmic'}),
+            %freq0avg_log{subjItr}           = freq0avg{subjItr};
+            %freq1avg_log{subjItr}           = freq1avg{subjItr};
+            %freq0avg_log{subjItr}.powspctrm = 10*log10(freq0avg{subjItr}.powspctrm);          
+            %freq1avg_log{subjItr}.powspctrm = 10*log10(freq1avg{subjItr}.powspctrm);         
+            %end
+        end
+        
+        % do log transformation if required
+        %if ismember(lower(opt.Scale), {'db', 'logarithmic'}),
+        freq0avg_log              = data0;
+        freq1avg_log              = data1;
+        for jj = 1: size(data0,2)
+            freq0avg_log{jj}.powspctrm = 10*log10(data0{jj}.powspctrm);          
+            freq1avg_log{jj}.powspctrm = 10*log10(data1{jj}.powspctrm); 
+        end        
+        
+        cfg = [];
+        cfg.keepindividual = 'yes';
+        
+        % run ft_freqstatistics
+        freq0 = ft_freqgrandaverage(cfg, data0{:});
+        freq1 = ft_freqgrandaverage(cfg, data1{:});
+        stats = ft_freqstatistics(cfgS, freq0, freq1);
+        
+        freq0_log = ft_freqgrandaverage(cfg, freq0avg_log{:});
+        freq1_log = ft_freqgrandaverage(cfg, freq1avg_log{:});        
+        stats_log = ft_freqstatistics(cfgS, freq0_log, freq1_log);
+                        
+        ft_stats              = [];
+        ft_stats.stats        = stats;
+        ft_stats.effect       = EFFECT{effectItr};
+        ft_stats.band         = BANDS(bandItr);
+        ft_stats.cond0        = rows0;
+        ft_stats.cond1        = rows1;
+        ft_stats.layout       = layout;
+        ft_stats.neighbours   = neighbours;
+        ft_stats.data0        = freq0avg;
+        ft_stats.data1        = freq1avg;
+        ft_stats.stats_log    = stats_log;
+        ft_stats.data0_log    = freq0avg_log;
+        ft_stats.data1_log    = freq1avg_log;
+        ft_stats.scale        = opt.Scale;
+        
+        % create save name
+        [filePath, fileName, fileExt] = fileparts(opt.SaveToFile);
+
+        if ~isempty(opt.SaveToFile),
+            thisSaveFile = [filePath filesep fileName '_' EFFECT{effectItr} '_' BANDS{bandItr} '_' datestr(now, 'yymmdd-HHMMSS')];
+
+%             if ismember(lower(opt.Scale), {'db', 'logarithmic'}),
+%                 thisSaveFile = [thisSaveFile '_logarithmic'];
+%             end
+
+            save([thisSaveFile fileExt], 'ft_stats');
+        end
+    
+    end
+end   
