@@ -5,53 +5,6 @@ There are numerous event markers in the EEG recordings. Some events mark the ons
 sub-block, a sub-section of a sub-block, a stimulus or a response. Each of these event markers
 can be used to select specific parts of the data.
 
-## tran_selector
-
-The __TRAN__ event marks the transition between 2 conditions and can be used to split the 
-data into 30 minute sub-blocks. It has the following properties:
-
-Code   | Label  | Type             | Track        | Description
--------|--------|------------------|--------------|---------------------
-`TRAN` |        | Stimulus event   | TCP/IP 55516 | Transition between blocks
-
-There is usually 1 extra __TRAN__ event in the list marking the end of the protocol so 
-selection should run to 4 (morning) or 8 (afternoon) events. 
-
-## nback_erp_selector
-
-
-## nback_score_selector
-
-
-## temp_selector
-
-The __TEMP__ event occurs every minute and contains all the temperatures related to the 
-temperature manipulation, i.e. the temperature of the water in both water baths (proximal
-and distal) and the temperature of the water entering and leaving the suit. 
-
-Code    | Label   | Type           | Track          | Description
---------|--------|-----------------|----------------|-----------------------------------------------------
-`NSIP`  |        | Stimulus event  | TCP/IP 55516   | 
- `TEMP` |        | Event key       | TCP/IP 55516   | 
- `PSET` | 00.00  | Event key       | TCP/IP 55516   | Set-point temperature of the proximal water bath
- `PCUR` | 00.00  | Event key       | TCP/IP 55516   | Current temperature of the proximal water bath
- `PINP` | 00.00  | Event key       | TCP/IP 55516   | Temperature of the water entering the proximal suit
- `POUT` | 00.00  | Event key       | TCP/IP 55516   | Temperature of the water leaving the proximal suit
- `DSET` | 00.00  | Event key       | TCP/IP 55516   | Set-point temperature of the distal water bath
- `DCUR` | 00.00  | Event key       | TCP/IP 55516   | Current temperature of the distal water bath
- `DINP` | 00.00  | Event key       | TCP/IP 55516   | Temperature of the water entering the distal suit
- `DOUT` | 00.00  | Event key       | TCP/IP 55516   | Temperature of the water leaving the distal suit
-
-
-Code  | Label         | Type           | Track | Description
-------|---------------|----------------|-------|-----------------------------------------------------
-`AUD` | auditory stim | Stimulus event | DIN1  | Audio onset recorded with AVtester
-`SAC` | saccade       | Stimulus event | DIN1  | Saccade onset recorded with AVtester
-`LM`  | left mouse    | Stimulus event | DIN1  | Left mouse button press
-`RM`  | right mouse   | Stimulus event | DIN1  | Right mouse button press
-`MM`  | middle mouse  | Stimulus event | DIN1  | Middle mouse button press
-
-
 Code | Label               | cel# | Description
 -----|---------------------|------|-----------------------------------------------------
 CELL |                     |      | CellNumbers from the E-Prime script indicating the individual procedures, ISIs and targets
@@ -111,8 +64,125 @@ ec++ |                     |      | Onset of the eyes-closed instructions (durat
 ecec |                     |      | Beginning of the 3 minute eyes-closed session
 ec–  |                     |      | Onset of auditory stimulus at the end of the 3 minutes eyes-closed session
 
-Each __TRSP__ event has the following keys indicating the properties of the stimulus:
-cel#, obs#, rsp#, eval, rtim, trl#.
+__TRSP__ events occur in every trial of a task and have the following keys indicating the properties of the stimulus in that trial:
+cel#, obs#, rsp#, eval, rtim, trl#. The cel# refers to the number in the table above.
+
+To correct for the timing delays in the stimulus onset, we recorded event markers on the 
+digital input channel of the EEG amplifier using the AV-tester. These events were given the 
+following properties:
+
+Code  | Label         | Type           | Track | Description
+------|---------------|----------------|-------|-----------------------------------------------------
+`AUD` | auditory stim | Stimulus event | DIN1  | Audio onset recorded with AVtester
+`SAC` | saccade       | Stimulus event | DIN1  | Saccade onset recorded with AVtester
+`LM`  | left mouse    | Stimulus event | DIN1  | Left mouse button press
+`RM`  | right mouse   | Stimulus event | DIN1  | Right mouse button press
+`MM`  | middle mouse  | Stimulus event | DIN1  | Middle mouse button press
+
+
+
+## tran_selector
+
+The __TRAN__ event marks the transition between 2 conditions and can be used to split the 
+data into 30 minute sub-blocks. It has the following properties:
+
+Code   | Label  | Type             | Track        | Description
+-------|--------|------------------|--------------|---------------------
+`TRAN` |        | Stimulus event   | TCP/IP 55516 | Transition between blocks
+
+There is usually 1 extra __TRAN__ event in the list marking the end of the protocol so 
+selection should run to 4 (morning) or 8 (afternoon) events. 
+
+## baseline_selector
+
+The __nbk+__ event occured 900000ms after the onset of a new block, by sending a pulse from
+the PC running the NCC software to the serial port of the E-Prime PC starting the task battery.
+This event can be used to select the preceding __baseline__ period (offset = -900 sec, duration = 900 sec) 
+as well as an entire __sub-block__ (offset = -900 sec, duration = 1800 sec). 
+
+Split    | Event  | Offset (sec) | Duration (sec) 
+---------|--------|--------------|---------------
+baseline | `nbk+` | -900         | 900
+block    | `nbk+` | -900         | 1800
+
+## nback_selector
+
+The nback_selector actually uses the end marker of the N-Back to select the relevant period. The 
+N-Back is preceded by instructions that have variable duration because the participant had 
+to manually click the mouse to proceed. The onset of the instructions of the following task 
+(PVT) marks the end of the fixed duration 3-minute N-Back.
+
+Split  | Event  | Offset (sec) | Duration (sec) 
+-------|--------|--------------|---------------
+nback  | `pvt+` | -180         | 180
+  
+
+## pvt_selector
+
+The __pvt_selector__ also uses the end marker of the task to select the relevant period, for the 
+same reason as the nback_selector above. The onset of the instructions of the following task 
+(SACCADE) marks the end of the fixed duration 3-minute PVT.
+
+Split  | Event  | Offset (sec) | Duration (sec) 
+-------|--------|--------------|---------------
+pvt    | `sac+` | -180         | 180
+
+## saccade_selector
+
+The __saccade_selector__ also uses the end marker of the task to select the relevant period, for the 
+same reason as the nback_selector above. The onset of the XXXXXXX marks the end of the fixed duration 1-minute saccade task.
+
+Split   | Event  | Offset (sec) | Duration (sec) 
+--------|--------|--------------|---------------
+saccade | ``     | -60          | 60
+
+
+## rs-eo_selector
+
+The __rs-eo_selector__ also uses the onset marker of the task to select the data during the 3-minute 
+resting-state eyes-open session. 
+
+Split  | Event  | Offset (sec) | Duration (sec) 
+-------|--------|--------------|---------------
+rs-eo  | `eoeo` | 0            | 180
+
+
+## rs-ec_selector
+
+The __rs-ec_selector__ also uses the onset marker of the task to select the data during the 3-minute 
+resting-state eyes-open session.  
+
+Split  | Event  | Offset (sec) | Duration (sec) 
+-------|--------|--------------|---------------
+rs-ec  | `ecec` | 0            | 180
+
+## erp_nback_selector
+
+
+## erp_pvt_selector
+
+
+## temp_selector
+
+The __TEMP__ event occurs every minute and contains all the temperatures related to the 
+temperature manipulation in its sub-keys, i.e. the temperature of the water in both water baths (proximal
+and distal) and the temperature of the water entering and leaving the suit. 
+
+Code    | Label   | Type           | Track          | Description
+--------|--------|-----------------|----------------|-----------------------------------------------------
+`NSIP`  |        | Stimulus event  | TCP/IP 55516   | 
+ `TEMP` |        | Event key       | TCP/IP 55516   | 
+ `PSET` | 00.00  | Event key       | TCP/IP 55516   | Set-point temperature of the proximal water bath
+ `PCUR` | 00.00  | Event key       | TCP/IP 55516   | Current temperature of the proximal water bath
+ `PINP` | 00.00  | Event key       | TCP/IP 55516   | Temperature of the water entering the proximal suit
+ `POUT` | 00.00  | Event key       | TCP/IP 55516   | Temperature of the water leaving the proximal suit
+ `DSET` | 00.00  | Event key       | TCP/IP 55516   | Set-point temperature of the distal water bath
+ `DCUR` | 00.00  | Event key       | TCP/IP 55516   | Current temperature of the distal water bath
+ `DINP` | 00.00  | Event key       | TCP/IP 55516   | Temperature of the water entering the distal suit
+ `DOUT` | 00.00  | Event key       | TCP/IP 55516   | Temperature of the water leaving the distal suit
+
+
+### Extra events
 
 
 Code    | Label                | Type           | Track            | Description
@@ -126,6 +196,7 @@ Code    | Label                | Type           | Track            | Description
 
 
 To extract the results from each of the sessions, use these events:
+
 Task    | Variable            | Events 
 --------|---------------------|----------------------------------
 N-Back  | correct target      | AUD, TRSP, cell #1, left mouse
