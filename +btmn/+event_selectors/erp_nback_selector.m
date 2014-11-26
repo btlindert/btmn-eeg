@@ -1,7 +1,6 @@
-classdef erp_event_selector < physioset.event.selector
-    % ERP_EVENT_SELECTOR - Selects ERP events
-    %
-    % See: <a href="matlab:misc.md_help('ssmd_auob.event_selector')">misc.md_help(''ssmd_auob.event_selector'')</a>
+classdef erp_nback_selector < physioset.event.selector
+    % ERP_NBACK_SELECTOR - Selects ERP events
+
     
    
     properties

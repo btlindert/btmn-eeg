@@ -2,11 +2,11 @@ function meta = fname2meta(fName)
 % FNAME2META - Translate file names into several meta-tags
 %
 %
-% See also: batman
+% See also: btmn
 
-import batman.block2condition;
+import btmn.block2condition;
 
-regex = 'batman_(?<subject>\d+)_eeg_all.*_(?<sub_block>[^_]+)_(?<block_1_14>\d+)';
+regex = 'btmn_(?<subject>\d+)_eeg_all.*_(?<sub_block>[^_]+)_(?<block_1_14>\d+)';
 
 meta = regexp(fName, regex, 'names');
 

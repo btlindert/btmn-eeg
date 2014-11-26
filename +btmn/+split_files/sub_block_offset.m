@@ -7,11 +7,11 @@ function off = sub_block_offset(sbType)
 
 off = mjava.hash;
 
-off('baseline') = 0;
-off('nback')    = 0;
-off('pvt')      = 0;
+off('baseline') = -930;
+off('nback')    = -180;
+off('pvt')      = -180;
 off('saccade')  = 0;
-off('subj')     = 0;
+off('subj')     = -120;
 off('rs-eo')    = 0;
 off('rs-ec')    = 0;
 

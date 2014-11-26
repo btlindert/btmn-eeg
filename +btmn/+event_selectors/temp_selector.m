@@ -3,8 +3,6 @@ classdef event_selector < physioset.event.selector
    
     properties
         StimType   = 'TEMP';  % Type of the temperature event       
-        Negated    = false;
-        DiscardMissingResp = true;
     end
 
     methods

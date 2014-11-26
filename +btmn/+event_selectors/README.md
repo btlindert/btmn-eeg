@@ -3,7 +3,47 @@ Event selectors
 
 There are numerous event markers in the EEG recordings. Some events mark the onset of a new
 sub-block, a sub-section of a sub-block, a stimulus or a response. Each of these event markers
-can be used to select specific parts of the data.
+can be used to select specific parts of the data. The events can be selected in a node:
+
+````matlab
+
+nodeList = {};
+
+%% NODE: import from .mff file
+
+myImporter = physioset.import.mff('Precision', 'single');
+myNode     = meegpipe.node.physioset_import.new('Importer', myImporter);
+
+nodeList = [nodeList {myNode}];
+
+
+%% Select block data
+
+mySel    = physioset.event.class_selector('Type', 'nbk+');
+offset   = -930;
+duration = 1800;
+
+thisNode = meegpipe.node.split.new(...
+    'EventSelector',        mySel, ...
+    'Offset',               offset, ...
+    'Duration',             duration, ...
+    'Name',                 'block');
+
+nodeList = [nodeList {thisNode}];
+
+%% The actual pipeline
+
+myPipe = meegpipe.node.pipeline.new(...
+    'NodeList',         nodeList, ...
+    'OGE',              USE_OGE, ...
+    'GenerateReport',   DO_REPORT, ...
+    'Save',             false, ...
+    'Name',             'split_files', ...
+    'Queue',            QUEUE);
+
+````
+
+Below is list of events in the data:
 
 Code | Label               | cel# | Description
 -----|---------------------|------|-----------------------------------------------------
@@ -67,7 +107,7 @@ ec–  |                     |      | Onset of auditory stimulus at the end of t
 __TRSP__ events occur in every trial of a task and have the following keys indicating the properties of the stimulus in that trial:
 cel#, obs#, rsp#, eval, rtim, trl#. The cel# refers to the number in the table above.
 
-To correct for the timing delays in the stimulus onset, we recorded event markers on the 
+To correct for the timing delays in the stimulus onset, we also recorded event markers on the 
 digital input channel of the EEG amplifier using the AV-tester. These events were given the 
 following properties:
 
@@ -80,10 +120,9 @@ Code  | Label         | Type           | Track | Description
 `MM`  | middle mouse  | Stimulus event | DIN1  | Middle mouse button press
 
 
+## TRAN event
 
-## tran_selector
-
-The __TRAN__ event marks the transition between 2 conditions and can be used to split the 
+The __TRAN__ event marks the transition between 2 conditions and could be used to split the 
 data into 30 minute sub-blocks. It has the following properties:
 
 Code   | Label  | Type             | Track        | Description
@@ -91,23 +130,26 @@ Code   | Label  | Type             | Track        | Description
 `TRAN` |        | Stimulus event   | TCP/IP 55516 | Transition between blocks
 
 There is usually 1 extra __TRAN__ event in the list marking the end of the protocol so 
-selection should run to 4 (morning) or 8 (afternoon) events. 
+selection should run to 4 (morning) or 8 (afternoon) events. Event better, use the __nbk+__ 
+event (see Baseline data). 
 
-## baseline_selector
 
-The __nbk+__ event occured 900000ms after the onset of a new block, by sending a pulse from
+## Baseline data
+
+The __nbk+__ event occured 930000ms (15.5 minutes) after the onset of a new block, by sending a pulse from
 the PC running the NCC software to the serial port of the E-Prime PC starting the task battery.
 This event can be used to select the preceding __baseline__ period (offset = -900 sec, duration = 900 sec) 
-as well as an entire __sub-block__ (offset = -900 sec, duration = 1800 sec). 
+as well as an entire __block__ (offset = -900 sec, duration = 1800 sec). 
 
 Split    | Event  | Offset (sec) | Duration (sec) 
 ---------|--------|--------------|---------------
-baseline | `nbk+` | -900         | 900
-block    | `nbk+` | -900         | 1800
+baseline | `nbk+` | -930         | 930
+block    | `nbk+` | -930         | 1800
 
-## nback_selector
 
-The nback_selector actually uses the end marker of the N-Back to select the relevant period. The 
+## N-Back data
+
+To select the __nback__ period, we use an event that marks the end of the task. The 
 N-Back is preceded by instructions that have variable duration because the participant had 
 to manually click the mouse to proceed. The onset of the instructions of the following task 
 (PVT) marks the end of the fixed duration 3-minute N-Back.
@@ -117,29 +159,29 @@ Split  | Event  | Offset (sec) | Duration (sec)
 nback  | `pvt+` | -180         | 180
   
 
-## pvt_selector
+## PVT data
 
-The __pvt_selector__ also uses the end marker of the task to select the relevant period, for the 
-same reason as the nback_selector above. The onset of the instructions of the following task 
+The __pvt__ period is also selected using the end marker, for the 
+same reason as the __nback__ period above. The onset of the instructions of the following task 
 (SACCADE) marks the end of the fixed duration 3-minute PVT.
 
 Split  | Event  | Offset (sec) | Duration (sec) 
 -------|--------|--------------|---------------
 pvt    | `sac+` | -180         | 180
 
-## saccade_selector
+## Saccade data
 
-The __saccade_selector__ also uses the end marker of the task to select the relevant period, for the 
-same reason as the nback_selector above. The onset of the XXXXXXX marks the end of the fixed duration 1-minute saccade task.
+The __saccade__ period too is selected using the end marker, for the 
+same reason as the __nback__ period above. The onset of the XXXXXXX marks the end of the fixed duration 1-minute saccade task.
 
 Split   | Event  | Offset (sec) | Duration (sec) 
 --------|--------|--------------|---------------
 saccade | ``     | -60          | 60
 
 
-## rs-eo_selector
+## Resting-state eyes-open data
 
-The __rs-eo_selector__ also uses the onset marker of the task to select the data during the 3-minute 
+The __rs-eo__ period is selected using the onset marker of the 3-minute 
 resting-state eyes-open session. 
 
 Split  | Event  | Offset (sec) | Duration (sec) 
@@ -147,22 +189,25 @@ Split  | Event  | Offset (sec) | Duration (sec)
 rs-eo  | `eoeo` | 0            | 180
 
 
-## rs-ec_selector
+## Resting-state eyes-closed data
 
-The __rs-ec_selector__ also uses the onset marker of the task to select the data during the 3-minute 
+The __rs-ec__ period is selected using the onset marker of the 3-minute 
 resting-state eyes-open session.  
 
 Split  | Event  | Offset (sec) | Duration (sec) 
 -------|--------|--------------|---------------
 rs-ec  | `ecec` | 0            | 180
 
-## erp_nback_selector
+
+## N-Back ERPs
 
 
-## erp_pvt_selector
+
+## PVT ERPs
 
 
-## temp_selector
+
+## Temperature events
 
 The __TEMP__ event occurs every minute and contains all the temperatures related to the 
 temperature manipulation in its sub-keys, i.e. the temperature of the water in both water baths (proximal
