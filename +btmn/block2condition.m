@@ -11,26 +11,19 @@ function [condID, condName] = block2condition(subj, blockID)
 % assert(strcmp(cond, 'light1_posture1_dpg0'));
 % ````
 % 
-% See also: batman.ft_freqanalysis_aggregate
+% See also: btmn.ft_freqanalysis_aggregate
 
 import misc.dlmread;
 import mperl.file.spec.catfile;
-import batman.conditions;
-import batman.protocol;
+import btmn.conditions;
+import btmn.protocol;
 import mperl.join;
 
 if nargin < 2 || numel(blockID) ~= 1,
     error('blockID must be a single block index');
 end
 
-% In /data/protocol the block IDs are encoded as 1..12, i.e. the two break
-% blocks are not considered
-if blockID > 9,
-    blockID = blockID -2 ;
-elseif blockID > 4,
-    blockID = blockID - 1;
-end
-
+% In /data/protocol the block IDs are encoded as 1..8
 [condIDList, condNameList] = conditions;
 
 [blockIDList, condIDMap, subjID] = protocol(subj);
