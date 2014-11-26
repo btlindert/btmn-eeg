@@ -36,7 +36,7 @@ QUEUE       = 'long.q@somerenserver.herseninstituut.knaw.nl';
 switch lower(get_hostname),
     case {'somerenserver', 'nin389'}
         files = link2rec('btmn', 'file_ext', '.mff', 'subject', SUBJECTS, ...
-            'folder', OUTPUT_DIR);
+            'session', 'afternoon', 'folder', OUTPUT_DIR);
         
 end
 

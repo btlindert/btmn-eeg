@@ -1,7 +1,7 @@
 Splitting files
 ===
 
-The recorded data files can be split into smaller chunks of data to facilitate data 
+The recorded raw data files will be split into smaller chunks of data to facilitate data 
 analysis. [Events][events] in the data are used to select the relevant data periods. The data
 in the __BATMAN__ project is splitted into blocks and sub-blocks:
 
@@ -24,7 +24,8 @@ rs-ec    | `ecec` | 0            | 180
 
 Usually we immediately split data into the smallest possible sub-blocks. However, to check 
 the temperature manipulation we made an exception. Here data was split into 30 min blocks and then 
-temperature was averaged across 1 min epochs.
+temperature was averaged across 1 min epochs. However, to reduce file size we removed the EEG
+from the .pset file.
 
 Split    | Event  | Offset (sec) | Duration (sec) 
 ---------|--------|--------------|---------------
@@ -116,13 +117,22 @@ myNode   = meegpipe.node.physioset_import.new('Importer', physioset.import.physi
 
 nodeList = [nodeList {myNode}];
 
-% Node 2: Extract PVT onset events
+% Node 2: Extract a 30min block
 
-evSel   = physioset.event.class_selector('Type', 'pvt+');
-dataSel = pset.selector.event_selector(evSel);
-myNode  = meegpipe.node.subset.new('DataSelector', dataSel);
+mySel    = physioset.event.class_selector('Type', 'nbk+');
+offset   = -930;
+duration = 1800;
 
-nodeList = [nodeList {myNode}];
+% Block naming policy
+splitNaming = @(physObj, ev, evIdx) ...
+    btmn.split_files.block_naming_policy(physObj, ev, evIdx, 'block');
+
+thisNode = split.new(...
+    'EventSelector',     mySel, ...
+    'Offset',            offset, ...
+    'Duration',          duration, ...
+    'SplitNamingPolicy', splitNaming, ...
+    'Name',              'block');
 
 % Build the pipeline
 

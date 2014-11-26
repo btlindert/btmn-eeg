@@ -6,7 +6,7 @@ function meta = fname2meta(fName)
 
 import btmn.block2condition;
 
-regex = 'btmn_(?<subject>\d+)_eeg_all.*_(?<sub_block>[^_]+)_(?<block_1_14>\d+)';
+regex = 'btmn_(?<subject>\d+)_eeg_(?<session>\w+).*_(?<sub_block>[^_]+)_(?<block>\d+)';
 
 meta = regexp(fName, regex, 'names');
 
@@ -14,7 +14,7 @@ meta.subject = meta.subject;
 
 warning('off', 'block2condition:InvalidBlockID');
 [condID, condName] = block2condition(str2double(meta.subject), ...
-    str2double(meta.block_1_14));
+    str2double(meta.block));
 warning('on', 'block2condition:InvalidBlockID');
 
 meta.cond_id   = condID;
