@@ -2,11 +2,11 @@ Temperature analysis
 ===
 
 The temperature manipulation is, together with the light and posture manipulation, a core
-part of BATMAN project. Both the light and posture manipulation were visually checked 
+part of __BATMAN__ project. Both the light and posture manipulation were visually checked 
 throughout the experiment, but the efficacy of the skin temperature manipulation needed to 
 be checked offline, because the thermistors were multiplexed into a single EEG channel. This 
 meant that during the experiment only the multiplexed voltages were visual and not the 
-actual temperatures in degrees celsius.
+actual temperatures in degrees Celsius.
 
 Therefore the first step is to check if the manipulation itself was successful.
  
@@ -17,7 +17,7 @@ Therefore the first step is to check if the manipulation itself was successful.
 
 Event  | Split name                     | Offset from `t` (mins) | Duration (mins)
 -------|--------------------------------| ---------------------- | ------------------
-`TRAN` | `[dataName]_block_[block#]`    | 0                      | 30
+`nbk+` | `[dataName]_block_[block#]`    | -15.5                  | 30
 
 2. If all went well, the multiplexed channel should be un-multiplexed when importing the 
    raw `.mff` file creating 12 individual temperature channels:

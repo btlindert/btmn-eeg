@@ -1,4 +1,4 @@
-function myPipe = temp_in_epochs(varargin)
+function myPipe = temp_in_epochs_pipeline(varargin)
 % TEMP_IN_EPOCHS - Average temp values in correlative data epochs
 
 import meegpipe.node.*;

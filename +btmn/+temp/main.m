@@ -1,5 +1,4 @@
 % MAIN - Obtain temp values in correlative 1-min windows
-%
 
 import misc.get_hostname;
 import misc.dir;
@@ -14,14 +13,10 @@ import mperl.join;
 switch lower(get_hostname),
     
     case {'somerenserver', 'nin389'},
-        INPUT_DIR = '/data1/projects/batman/analysis/temp/splitting';
-        OUTPUT_DIR = ['/data1/projects/batman/analysis/temp/temp_' ...
+        INPUT_DIR = '/data1/projects/btmn/analysis/splitting/temp';
+        OUTPUT_DIR = ['/data1/projects/btmn/analysis/temp/temp_' ...
             datestr(now, 'yymmdd-HHMMSS')];
-        
-    case 'outolintulan'
-        INPUT_DIR = '/Volumes/DATA/datasets/batman';
-        OUTPUT_DIR = '/Volumes/DATA/datasets/batman/temp';
-        
+                
     otherwise
         
         error('No idea where the data is in host %s', get_hostname);
@@ -42,7 +37,7 @@ regex = '_\d+\.pseth$';
 files = finddepth_regex_match(OUTPUT_DIR, regex);
 
 %% Process all files with the temp feature extraction pipeline
-myPipe = batman.pipes.temp_in_epochs(...
+myPipe = btmn.pipes.temp_in_epochs_pipeline(...
     'GenerateReport',   DO_REPORT, ...
     'Parallelize',      USE_OGE, ...
     'Queue',            QUEUE);
