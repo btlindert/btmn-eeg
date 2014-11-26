@@ -16,13 +16,13 @@ nodeList = {};
 %% Node: data import
 myImporter = physioset.import.physioset('Precision', 'double');
 myNode = physioset_import.new('Importer', myImporter);
-
 nodeList = [nodeList {myNode}];
+
 
 %% Node: copy the physioset
-
 myNode = copy.new;
 nodeList = [nodeList {myNode}];
+
 
 %% Node: remove large signal fluctuations using a LASIP filter
 
@@ -72,11 +72,13 @@ minVal = @(x) median(x) - 40;
 maxVal = @(x) median(x) + 15;
 myCrit = bad_channels.criterion.var.new('Min', minVal, 'Max', maxVal);
 myNode = bad_channels.new('Criterion', myCrit);
+
 nodeList = [nodeList {myNode}];
+
 
 %% Node (optional): bad channels rejection using cross-correlation
 % This node will mark as bad those channels that have abnormally low
-% cross-correlation with the neaghboring channels. This node can be used in
+% cross-correlation with the neighboring channels. This node can be used in
 % addition to the bad channels rejection node that we used above.
 
 % This version of the xcorr criterion will reject those channels whose
@@ -84,7 +86,7 @@ nodeList = [nodeList {myNode}];
 % 10 nearest neighbor channels is 10 dBs below the median cross-correlation
 % between its 10 nearest neighbors.
 
-% We comment this node becase it may not be necessary...
+% We comment this node because it may not be necessary...
 % myCrit = bad_channels.criterion.xcorr.new(...
 %     'NN',   10, ...
 %     'Min',  @(corrVal) median(corrVal) - 10 ...
@@ -98,11 +100,11 @@ myNode = bad_samples.new(...
     'MADs',         5, ...
     'WindowLength', @(fs) fs/4, ...
     'MinDuration',  @(fs) round(fs/4));
+
 nodeList = [nodeList {myNode}];
 
 
 %% Node: Band-pass filter between 0.5 and 70 Hz
-
 myFilter    = @(sr) filter.bpfilt('fp', [0.5 70]/(sr/2));
 
 mySelector  = cascade(...
@@ -117,45 +119,16 @@ myNode  = tfilter.new(...
 
 nodeList = [nodeList {myNode}];
 
-%% Node: Downsample
 
+%% Node: Downsample
 myNode = resample.new('OutputRate', 250);
 nodeList = [nodeList {myNode}];
 
+
 %% Node: remove PWL
-
 myNode = bss_regr.pwl('IOReport', report.plotter.io);
-
 nodeList = [nodeList {myNode}];
 
-
-%% Node: remove MUX noise
-
-% 141018 - THIS STAGE CAN PROBABLY BE REMOVED IN THE NEW DATASETS.
-
-% MUX noise seems to appear only very rarely. Seems the purpose of this
-% node is to reject only that type of noise, we set the Max threshold to a
-% very large value to try to remove only true MUX-related components.
-mySel = cascade(sensor_class('Class', 'EEG'), good_data);
-myCrit = spt.criterion.psd_ratio.new(...
-    'Band1',    [12 16;49 51;17 19], ...
-    'Band2',    [7 10], ...
-    'MaxCard',  2, ...
-    'Max',      @(x) min(median(x) + 10*mad(x), 100));
-
-myPCA  = spt.pca.new(...
-    'Var',          .995, ...
-    'MinDimOut',    15, ...
-    'MaxDimOut',    35);
-myNode = bss_regr.new(...
-    'DataSelector',     mySel, ...
-    'Criterion',        myCrit, ...
-    'PCA',              myPCA, ...
-    'BSS',              efica.new, ...
-    'Name',             'mux-noise', ...
-    'IOReport',         report.plotter.io);
-
-nodeList = [nodeList {myNode}];
 
 %% Node: Reject obvious EOG components using their topography
 myNode = bss_regr.eog_egi256_hcgsn1(...
@@ -177,6 +150,7 @@ myCrit = spt.criterion.mrank.eog(...
     'Percentile',   80);
 myNode = bss_regr.eog('Criterion', myCrit, 'Name', 'low-freq-noise');
 nodeList = [nodeList {myNode}];
+
 
 %% Node: interpolate bad channels
 myNode = chan_interp.new;

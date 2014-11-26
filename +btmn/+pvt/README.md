@@ -4,7 +4,7 @@ Psychomotor vigilance task (PVT) analysis
 The aim of the psychomotor vigilance task was to test the effects of light, posture and body 
 temperature on simple reaction times.
 
-The Psychomotor vigilance task was implemented in E-Prime and communicated with EGI's 
+The Psychomotor Vigilance Task was implemented in E-Prime and communicated with EGI's 
 NetStation using the E-Prime Extension for NetStation (EENS) package. This package provided
 the means to send trial events from E-Prime to NetStation. However, testing in our lab 
 revealed a delay between the timing of the event markers (from auditory and visual stimuli) 
