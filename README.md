@@ -47,41 +47,41 @@ perform these tasks, and eyes-open and eyes-closed resting-state all while being
 to these experimental manipulations.
 In total there were 12 experimental blocks, as illustrated in the diagram below:
 
-![Experimental protocol](../batman/img/batman-protocol.png "Experimental protocol")
+![Experimental protocol](../btmn/img/batman-protocol.png "Experimental protocol")
 
 Note that each __experimental block__ consisted of six __sub-blocks__:
 A _baseline_ sub-block when the subject was instructed to simply wait with
-her eyes open, a _NBACK_ sub-block that involved an auditory 2-back working memory task,
-a _PVT_ sub-block that involved a simple reaction-time task, a _SAC_ sub-block that involved
-tracking a horizontally moving dot with the eyes, a _SUBJ_ sub-block that contained the 
-subjective questions, a _RS-EO_ sub-block when the subject stared at a cross hair, and a
-_RS-EC_ sub-block when the subject rested with the eyes closed.
+her eyes open, a __nback__ sub-block that involved an auditory 2-back working memory task,
+a __pvt__ sub-block that involved a simple reaction-time task, a __saccade__ sub-block that involved
+tracking a horizontally moving dot with the eyes, a __subj__ sub-block that contained the 
+subjective questions, a __rs-eo__ sub-block when the subject stared at a cross hair, and a
+__rs-ec__ sub-block when the subject rested with the eyes closed.
 
-The _NBACK_, _PVT_, _RS-EO_ and _RS-EC_ all lasted 3 minutes. The _SAC_ sub-block lasted 1 minute.
-The _SUBJ_ had variable duration depending on how fast the questions were answered.
+The __nback__, __pvt__, __rs-eo__ and __rs-ec__ all lasted 3 minutes. The __saccade__ sub-block lasted 1 minute.
+The __subj__ had variable duration depending on how fast the questions were answered.
 
 ## What have we done with the BATMAN dataset?
 
 The table below lists all the analyses and processing tasks that have been or will be 
-performed on the BATMAN dataset so far, roughly in chronological order.
+performed on the BATMAN dataset, roughly in chronological order.
 
 What?                                                 | Documentation
 ----------------------------------------------------- | -------------
-Data splitting                                        | [+batman/+splitting/README.md][split]
-Pre-processing                                        | [+batman/+preproc/README.md][preproc]
-Extraction of temperature values                      | [+batman/+temp/README.md][temp]
-Extraction of N-Back ERPs                             | [+batman/+nback/README.md][nback] 
-Extraction of PVT ERPs                                | [+batman/+pvt/README.md][pvt]
-Extraction of resting state power features            | [+batman/+features/README.md][features]
-Extraction of heart rate variability (HRV) features   | [+batman/+features/README.md][features]
-Extraction of arterial blood pressure features        | [+batman/+abp/README.md][abp]
-Statistical analysis of effects on EEG power features | [+batman/+stats/README.md][stats]
+Data splitting                                        | [+btmn/+split_files/README.md][split]
+Pre-processing                                        | [+btmn/+preproc/README.md][preproc]
+Extraction of temperature values                      | [+btmn/+temp/README.md][temp]
+Extraction of N-Back ERPs                             | [+btmn/+nback/README.md][nback] 
+Extraction of PVT ERPs                                | [+btmn/+pvt/README.md][pvt]
+Extraction of resting state power features            | [+btmn/+features/README.md][features]
+Extraction of heart rate variability (HRV) features   | [+btmn/+features/README.md][features]
+Extraction of arterial blood pressure features        | [+btmn/+abp/README.md][abp]
+Statistical analysis of effects on EEG power features | [+btmn/+stats/README.md][stats]
 
-[split]: ./batman/+splitting/README.md
-[preproc]: ./+batman/+preproc/README.md
-[temp]: ./+batman/+temp/README.md
-[nback]: ./+batman/+nback/README.md
-[pvt]: ./+batman/+pvt.README.md
-[features]: ./+batman/+features/README.md
-[stats]: ./+batman/+stats/README.md
-[abp]: ./+batman/+abp/README.md
+[split]:    ./btmn/+split_files/README.md
+[preproc]:  ./+btmn/+preproc/README.md
+[temp]:     ./+btmn/+temp/README.md
+[nback]:    ./+btmn/+nback/README.md
+[pvt]:      ./+btmn/+pvt.README.md
+[features]: ./+btmn/+features/README.md
+[stats]:    ./+btmn/+stats/README.md
+[abp]:      ./+btmn/+abp/README.md
