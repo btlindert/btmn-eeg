@@ -253,4 +253,10 @@ PVT     | reaction time       | AUD, left mouse
 Saccade |                     | SAC
 
 
+## Additional information
 
+The [Advisory Notices][notice] from [EGI][egi] on timing issues in the NetStation software 
+describe the delay between the DIN event channels and the EEG.
+
+[notice]: timing.md
+[egi]:    http://www.egi.com
