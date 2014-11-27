@@ -25,18 +25,18 @@ In a nutshell, the laboratory protocol involved various environmental manipulati
 (posture, skin temperature, ambient light) that are expected to trigger
 relevant thermoregulatory system responses as well as to have profound effects on alertness. 
 Such responses were characterized using a diverse set of variables: arterial blood pressure, 
-ECG, skin and core temperature, and [hdEEG][eeg]. In order to assess effects on behavior and alertness, the
-subjects performed an auditory [2-back][nback] task, an auditory [psychomotor 
-vigilance task][pvt], a saccade test, answered subjective questions on fatigue and effort to 
+ECG, skin and core temperature, and [hdEEG][wikieeg]. In order to assess effects on behavior and alertness, the
+subjects performed an auditory [2-back][wikinback] task, an auditory [psychomotor 
+vigilance task][wikipvt], a saccade test, answered subjective questions on fatigue and effort to 
 perform these tasks, and eyes-open and eyes-closed resting-state all while being subjected 
 to these experimental manipulations.
 In total there were 12 experimental blocks, as illustrated in the diagram below:
 
 ![Experimental protocol](../+btmn/img/batman-protocol.png "Experimental protocol")
 
-[eeg]: http://en.wikipedia.org/wiki/Electroencephalography
-[nback]: https://en.wikipedia.org/wiki/N-back
-[pvt]: https://en.wikipedia.org/wiki/Psychomotor_vigilance_task
+[wikieeg]: http://en.wikipedia.org/wiki/Electroencephalography
+[wikinback]: https://en.wikipedia.org/wiki/N-back
+[wikipvt]: https://en.wikipedia.org/wiki/Psychomotor_vigilance_task
 
 
 Note that each __experimental block__ consisted of seven __sub-blocks__:

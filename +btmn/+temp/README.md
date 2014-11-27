@@ -15,47 +15,47 @@ Therefore the first step is to check if the manipulation itself was successful.
 1. Split the raw file into 4 (morning) or 8 (afternoon) blocks. Using the event specified 
    below, ignoring the EEG data to create smaller files:
 
-Event  | Split name                     | Offset from `t` (mins) | Duration (mins)
--------|--------------------------------| ---------------------- | ------------------
-`nbk+` | `[dataName]_block_[block#]`    | -15.5                  | 30
+	Event  | Split name                     | Offset from `t` (mins) | Duration (mins)
+	-------|--------------------------------| ---------------------- | ------------------
+	`nbk+` | `[dataName]_block_[block#]`    | -15.5                  | 30
 
 2. If all went well, the multiplexed channel should be un-multiplexed when importing the 
    raw `.mff` file creating 12 individual temperature channels:
 
-Channel   | Body location             
-----------|------------------------------------
-`temp 1`  | foot, non-dominant side
-`temp 2`  | foot, dominant side
-`temp 3`  | calf, non-dominant side
-`temp 4`  | mid thigh, front, non-dominant side
-`temp 5`  | stomach, 2cm above navel
-`temp 6`  | infra-clavicular, non-dominant side
-`temp 7`  | lower arm, mid and dorsal, non-dominant side
-`temp 8`  | hand palm, non-dominant side
-`temp 9`  | hand palm, dominant side
-`temp 10` | fingertip index finger, non-dominant side
-`temp 11` | core body temperature, 10cm into rectum
-`temp 12` | room temperature
+	Channel   | Body location             
+	----------|------------------------------------
+	`temp 1`  | foot, non-dominant side
+	`temp 2`  | foot, dominant side
+	`temp 3`  | calf, non-dominant side
+	`temp 4`  | mid thigh, front, non-dominant side
+	`temp 5`  | stomach, 2cm above navel
+	`temp 6`  | infra-clavicular, non-dominant side
+	`temp 7`  | lower arm, mid and dorsal, non-dominant side
+	`temp 8`  | hand palm, non-dominant side
+	`temp 9`  | hand palm, dominant side
+	`temp 10` | fingertip index finger, non-dominant side
+	`temp 11` | core body temperature, 10cm into rectum
+	`temp 12` | room temperature
 
 3. Within each block extract the temperatures of the water baths and entering and leaving 
    the suit from the events. These temperatures are sent once per minute by the NCC 
    software to EGI's NetStation on event channel ECI TCP/IP 55516 using a TEMP event with 
    sub-fields:   
 
-Label  | Sub-field  | Description              
--------|------------|---------------------------------------------------------
-`TEMP` | `PSET`     | Set-point temperature of the proximal water bath
-`TEMP` | `PCUR`     | Current temperature of the proximal water bath
-`TEMP` | `PINP`     | Temperature of the water entering the proximal suit
-`TEMP` | `POUT`     | Temperature of the water leaving the proximal suit
-`TEMP` | `DSET`     | Set-point temperature of the distal water bath
-`TEMP` | `DCUR`     | Current temperature of the distal water bath
-`TEMP` | `DINP`     | Temperature of the water entering the distal suit
-`TEMP` | `DOUT`     | Temperature of the water leaving the distal suit
+	Label  | Sub-field  | Description              
+	-------|------------|---------------------------------------------------------
+	`TEMP` | `PSET`     | Set-point temperature of the proximal water bath
+	`TEMP` | `PCUR`     | Current temperature of the proximal water bath
+	`TEMP` | `PINP`     | Temperature of the water entering the proximal suit
+	`TEMP` | `POUT`     | Temperature of the water leaving the proximal suit
+	`TEMP` | `DSET`     | Set-point temperature of the distal water bath
+	`TEMP` | `DCUR`     | Current temperature of the distal water bath
+	`TEMP` | `DINP`     | Temperature of the water entering the distal suit
+	`TEMP` | `DOUT`     | Temperature of the water leaving the distal suit
 
-4. Aggregate all temperatures to once per minute and export to R.
+4. Aggregate all temperatures to once per minute and export to [R][r].
 
 5. Run a model in R on the last 6 minutes of each block (resting-state eeg) to test if the 
    manipulation was successful.
    
-   
+[r]: http://www.r-project.org/
