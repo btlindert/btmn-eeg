@@ -32,7 +32,7 @@ perform these tasks, and eyes-open and eyes-closed resting-state all while being
 to these experimental manipulations.
 In total there were 12 experimental blocks, as illustrated in the diagram below:
 
-![Experimental protocol](../+btmn/img/batman-protocol.png "Experimental protocol")
+![Experimental protocol](+btmn/img/batman-protocol.png "Experimental protocol")
 
 [wikieeg]: http://en.wikipedia.org/wiki/Electroencephalography
 [wikinback]: https://en.wikipedia.org/wiki/N-back
