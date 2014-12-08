@@ -1,4 +1,5 @@
 % MAIN - Obtain temp values in correlative 1-min windows
+%
 
 import misc.get_hostname;
 import misc.dir;
@@ -10,18 +11,9 @@ import mperl.join;
 
 %% User-defined parameters
 
-switch lower(get_hostname),
-    
-    case {'somerenserver', 'nin389'},
-        INPUT_DIR = '/data1/projects/btmn/analysis/splitting/temp';
-        OUTPUT_DIR = ['/data1/projects/btmn/analysis/temp/temp_' ...
-            datestr(now, 'yymmdd-HHMMSS')];
-                
-    otherwise
-        
-        error('No idea where the data is in host %s', get_hostname);
-        
-end
+INPUT_DIR = '/data2/projects/btmn/analysis/splitting/temp/';
+OUTPUT_DIR = ['/data2/projects/btmn/analysis/temperature/temp_' ...
+    datestr(now, 'yymmdd-HHMMSS')];
 
 % Pipeline options
 USE_OGE     = true;
@@ -29,7 +21,7 @@ DO_REPORT   = true;
 QUEUE       = 'short.q';
 
 %% Select the relevant files and start the data processing jobs
-regex = 'split_files-.+_\d+\.pseth?$';
+regex = '_afternoon_block_\d\.pseth?$';
 files = finddepth_regex_match(INPUT_DIR, regex, false);
 
 link2files(files, OUTPUT_DIR);
@@ -37,10 +29,7 @@ regex = '_\d+\.pseth$';
 files = finddepth_regex_match(OUTPUT_DIR, regex);
 
 %% Process all files with the temp feature extraction pipeline
-myPipe = btmn.pipes.temp_in_epochs_pipeline(...
-    'GenerateReport',   DO_REPORT, ...
-    'Parallelize',      USE_OGE, ...
-    'Queue',            QUEUE);
+myPipe = btmn.pipes.temp_in_epochs_pipeline();
 
 
 run(myPipe, files{:});
