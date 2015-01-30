@@ -16,9 +16,9 @@ dataName  = get_name(data);
 regex     = '.+_eeg_(?<session>\w+)';
 sessionId = regexp(dataName, regex, 'names');
 
-if istrcmpi(sessionId.session, 'morning')
+if strcmpi(sessionId.session, 'morning')
     nBlocks = 4;
-elseif istrcmpi(sessionId.session, 'afternoon')
+elseif strcmpi(sessionId.session, 'afternoon')
     nBlocks = 8;
 end
 
