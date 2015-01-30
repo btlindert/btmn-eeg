@@ -1,55 +1,48 @@
-function myPipe = split_pipeline(varargin)
-% SPLIT_FILES - Split raw data files into single sub-block files
+function myPipe = block_split_pipeline(varargin)
+% BLOCK_SPLIT_FILES - Splits raw data files into single 30 min block files
 %
 % See also: btmn.pipes
-
-import meegpipe.node.*;
-import batman.split_files.*;
-
-% Default options
-USE_OGE    = true;
-DO_REPORT  = true;
-QUEUE      = 'long.q@somerenserver.herseninstituut.knaw.nl';
-
+import meegpipe.*;
+import physioset.*;
 
 nodeList = {};
 
-%% NODE: import from .mff file
+%% NODE: import from .mff file.
 
 myImporter = physioset.import.mff('Precision', 'single');
 myNode = meegpipe.node.physioset_import.new('Importer', myImporter);
 
 nodeList = [nodeList {myNode}];
 
+%% Extract 30min blocks.
 
-%% Extract baseline, nback, pvt, saccade, subj, rs-eo, and rs-ec sub-blocks
+% Specify the event selector.
+mySel    = physioset.event.class_selector('Type', 'nbk+');
+offset   = -930;
+duration = 1800;
 
-sbTypes = keys(sub_block_duration);
+% Block naming policy.
+splitNaming = @(physObj, ev, evIdx) ...
+    btmn.split_files.block_naming_policy(physObj, ev, evIdx, 'block');
 
-for sbTypeItr = 1:numel(sbTypes)
+% Remove the EEG data, keep physiology and events.
+myDataSel = ~pset.selector.sensor_class('Class', 'EEG');
 
-    thisSbType = sbTypes{sbTypeItr};
-    mySel      = sub_block_event(sbTypes);
-    offset     = sub_block_offset(thisSbType);
-    duration   = sub_block_duration(thisSbType);
+myNode = meegpipe.node.split.new(...
+    'DataSelector',         myDataSel, ...
+    'EventSelector',        mySel, ...
+    'Offset',               offset, ...
+    'Duration',             duration, ...
+    'SplitNamingPolicy',    splitNaming, ...
+    'Name',                 'block');
 
-    thisNode = meegpipe.node.split.new(...
-        'EventSelector',        mySel, ...
-        'Offset',               offset, ...
-        'Duration',             duration, ...
-        'Name',                 thisSbType);
-
-    nodeList = [nodeList {thisNode}]; %#ok<AGROW>
-end
-
-%% The actual pipeline
+nodeList = [nodeList {myNode}]; %#ok<AGROW>
+%% The actual pipeline.
 
 myPipe = meegpipe.node.pipeline.new(...
     'NodeList',         nodeList, ...
-    'OGE',              USE_OGE, ...
-    'GenerateReport',   DO_REPORT, ...
-    'Save',             false, ...
-    'Name',             'split_files', ...
-    'Queue',            QUEUE);
+    'Save',             true, ...
+    'Name',             'block_split', ...
+    varargin{:});
 
 end
