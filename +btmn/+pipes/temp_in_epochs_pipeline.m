@@ -6,9 +6,6 @@ import physioset.event.class_selector;
 import pset.selector.event_selector;
 import physioset.event.value_selector;
 
-USE_OGE   = true;
-DO_REPORT = true;
-
 nodeList = {};
 
 %% NODE: Data importer
