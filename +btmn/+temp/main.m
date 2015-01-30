@@ -1,5 +1,4 @@
 % MAIN - Obtain temp values in correlative 1-min windows
-%
 
 import misc.get_hostname;
 import misc.dir;
