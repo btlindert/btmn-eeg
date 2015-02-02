@@ -11,14 +11,17 @@ import btmn.*;
 
 %% Splitting parameters
 
-SUBJECTS = 9;
-       
-OUTPUT_DIR = '/data2/projects/btmn/analysis/splitting/sub-blocks/';      
+SUBJECTS   = 1:2;
+SESSION    = 'morning'; %'afternoon'       
+OUTPUT_DIR = '/data2/projects/btmn/analysis/eeg/splitting/sub-blocks/';      
 
 %% Select the relevant data files
 
-files = link2rec('btmn', 'file_ext', '.mff', 'subject', SUBJECTS, ...
-    'session', 'morning', 'folder', OUTPUT_DIR);
+files = link2rec('btmn', ... 
+    'file_ext', '.mff', ...
+    'subject', SUBJECTS, ...
+    'session', SESSION, ... 
+    'folder', OUTPUT_DIR);
         
 if isempty(files),
     error('Could not find any input data file');
@@ -29,7 +32,7 @@ end
 % Pipeline options
 DO_REPORT = true;
 USE_OGE   = true;
-QUEUE     = 'meegpipe.q@somerenserver.herseninstituut.knaw.nl';
+QUEUE     = 'short.q@somnode4';
 
 myPipe = btmn.pipes.sub_block_split_pipeline(...
     'GenerateReport',   DO_REPORT, ...
