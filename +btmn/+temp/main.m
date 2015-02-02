@@ -10,12 +10,12 @@ import mperl.join;
 
 %% User-defined parameters
 
-INPUT_DIR = '/data2/projects/btmn/analysis/splitting/temp/';
-OUTPUT_DIR = ['/data2/projects/btmn/analysis/temperature/temp_' ...
+INPUT_DIR = '/data2/projects/btmn/analysis/eeg/splitting/blocks/';
+OUTPUT_DIR = ['/data2/projects/btmn/analysis/eeg/temperature/temp_' ...
     datestr(now, 'yymmdd-HHMMSS')];
 
 %% Select the relevant files and start the data processing jobs
-regex = '_afternoon_block_\d\.pseth?$';
+regex = '_afternoon_block_\d\.pseth?$'; %'morning'
 files = finddepth_regex_match(INPUT_DIR, regex, false);
 
 link2files(files, OUTPUT_DIR);
@@ -27,9 +27,9 @@ files = finddepth_regex_match(OUTPUT_DIR, regex);
 % Pipeline options
 DO_REPORT   = true;
 USE_OGE     = true;
-QUEUE       = 'meegpipe.q@somerenserver.herseninstituut.knaw.nl';
+QUEUE       = 'meegpipe.q';
 
-myPipe = btmn.pipes.split_pipeline(...
+myPipe = btmn.pipes.temp_in_epochs_pipeline(...
     'GenerateReport',   DO_REPORT, ...
     'OGE',              USE_OGE, ...
     'Queue',            QUEUE);
