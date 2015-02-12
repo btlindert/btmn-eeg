@@ -87,7 +87,9 @@ featList(1:4) = {...
 
 for i = 1:12
     featNames{i+4} = sprintf('chan%d', i);
-    featList{i+4} = @(x, ev, sel) mean(x(i,:));
+    % physioset imports 13 temp channels, so here we select 2:13 as the
+    % first channels is the Voltage calib channel...
+    featList{i+4} = @(x, ev, sel) mean(x(i+1,:)); 
 end
 
 myNode = generic_features.new(...
