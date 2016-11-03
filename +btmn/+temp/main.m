@@ -9,13 +9,13 @@ import mperl.file.find.finddepth_regex_match;
 import mperl.join;
 
 %% User-defined parameters
-
-INPUT_DIR = '/data2/projects/btmn/analysis/eeg/splitting/blocks/';
-OUTPUT_DIR = ['/data2/projects/btmn/analysis/eeg/temperature/temp_' ...
+INPUT_DIR  = '/someren/projects/btmn/analysis/eeg/splitting/blocks/';
+OUTPUT_DIR = ['/someren/projects/btmn/analysis/eeg/temperature/temperature_', ...
     datestr(now, 'yymmdd-HHMMSS')];
+SESSION    = 'afternoon'; %'morning'
 
 %% Select the relevant files and start the data processing jobs
-regex = '_afternoon_block_\d\.pseth?$'; %'morning'
+regex = ['_' SESSION '_block_\d\.pseth?$']; %'morning'
 files = finddepth_regex_match(INPUT_DIR, regex, false);
 
 link2files(files, OUTPUT_DIR);
@@ -34,4 +34,4 @@ myPipe = btmn.pipes.temp_in_epochs_pipeline(...
     'OGE',              USE_OGE, ...
     'Queue',            QUEUE);
 
-run(myPipe, files{:});
+run(myPipe, files{:}); % test on only two files first!
