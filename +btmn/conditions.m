@@ -1,39 +1,48 @@
-function [condIDout, condNames] = conditions()
+function condName = conditions(condID, SESSION)
 
-import batman.*;
-import misc.dlmread;
+import btmn.*;
 import mperl.file.spec.catfile;
 import mperl.join;
 
-fName = catfile(root_path, 'data', 'conditions.csv');
-[condSpecs, varNames, condID] = dlmread(fName, ',', 0, 1);
+% Capitalize first letter of SESSION
+session = regexprep(SESSION, '(\<[a-z])', '${upper($1)}');
 
-% Remove the dpg=2 conditions, these were not obtained for all subjects
-%condID(condSpecs(:,3) > 1) = [];
-%condSpecs(condSpecs(:,3) > 1,:) = [];
+fName = catfile(root_path, 'data', ['conditions' session '.csv']);
 
-varNames = varNames(2:end);
+% Read numeric contents
+condContent = csvread(fName, 1, 1);
 
-% Create some nice condition names
-condNames = cell(size(condID));
-dims = nan(1, numel(varNames));
-for i = 1:numel(dims)
-   dims(i) = numel(unique(condSpecs(:,i))); 
+if strcmpi(SESSION, 'Afternoon')
+    
+    % Extract headers
+    fid = fopen(fName);
+    C = textscan(fid, '%s%s%s%s', 1, 'delimiter', ',');
+    fclose(fid);
+
+    % Drop first column
+    varNames = {C{1,2}, C{1,3}, C{1,4}}; 
+
+    % Create condition names: e.g. light1_posture1_dpg1
+    % Again rows = conditions
+    condName = [char(varNames{1}), num2str(condContent(condID, 1)), '_', ...
+        char(varNames{2}), num2str(condContent(condID, 2)), '_', ...
+        char(varNames{3}), num2str(condContent(condID, 3))];
+    
+elseif strcmpi(SESSION, 'Morning')
+    
+    % Extract headers
+    fid = fopen(fName);
+    C = textscan(fid, '%s%s%s', 1, 'delimiter', ',');
+    fclose(fid);
+
+    % Drop first column
+    varNames = {C{1,2}, C{1,3}}; 
+
+    % Create condition names: e.g. light1_posture1_dpg1
+    % Again rows = conditions
+    condName = [char(varNames{1}), num2str(condContent(condID, 1)), '_', ...
+        char(varNames{2}), num2str(condContent(condID, 2))];    
+
 end
-condNames = reshape(condNames, dims);
-condIDout = cell(size(condID));
-
-for i = 1:numel(condNames)
-    tmpName = '';
-    for j = 1:numel(varNames)
-        thisLevel = condSpecs(i,j);
-        tmpName = [tmpName varNames{j} num2str(thisLevel) '_']; %#ok<AGROW>
-    end
-    tmpName(end) = []; 
-    eval(['idx = sub2ind(dims,' join(',', condSpecs(i,:)+1) ');']);
-    condNames(idx) = {tmpName};
-    condIDout(idx) = condID(i);
-end
-
 
 end
