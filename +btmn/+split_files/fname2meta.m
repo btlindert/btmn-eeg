@@ -14,7 +14,7 @@ meta.subject = meta.subject;
 
 warning('off', 'block2condition:InvalidBlockID');
 [condID, condName] = block2condition(str2double(meta.subject), ...
-    str2double(meta.block));
+    str2double(meta.block), meta.session);
 warning('on', 'block2condition:InvalidBlockID');
 
 meta.cond_id   = condID;
