@@ -1,19 +1,21 @@
 % MAIN - Split raw data files into single block files
 close all;
 clear all;
-clear classes;
+%clear classes;
 
 import misc.get_hostname;
 import somsds.link2rec;
 import misc.dir;
+import misc.copyfile;
 import meegpipe.*;
 import btmn.*;
 
 %% Splitting parameters
 
-SUBJECTS   = [3:4, 6, 8:9, 11:16, 19:20, 22:28, 30:33, 35:38, 41:43]; %1:2
+SUBJECTS   = [1:4, 6, 8:9, 11:16, 19:20, 22:28, 30:38, 40:44, 45:113];
+%SUBJECTS   = [8, 16, 20, 31];%[34, 40, 44];%[8,16,20,31,34,40,44];
 SESSION    = 'afternoon'; %'morning'
-OUTPUT_DIR = '/data2/projects/btmn/analysis/eeg/splitting/blocks/';
+OUTPUT_DIR = '/someren/projects/btmn/analysis/eeg/splitting/blocks/';
         
 %% Select the relevant data files
 
@@ -35,7 +37,7 @@ USE_OGE   = true;
 QUEUE     = 'meegpipe.q';
 
 myPipe = btmn.pipes.block_split_pipeline(...
-    'GenerateReport', DO_REPORT, ...
+    'GenerateReport', false, ...
     'OGE',            USE_OGE, ...
     'Queue',          QUEUE);
 
